@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Đơn hàng #{{ order.id }}{% endblock %}
+{% block page_title %}Đơn hàng #{{ order.id }}{% endblock %}
+{% block page_subtitle %}Chi tiết và cập nhật trạng thái đơn hàng{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('admin_orders') }}" class="back-link">← Quay lại danh sách đơn hàng</a>
+
+<div class="order-detail-grid">
+  <div class="admin-panel">
+    <h2 class="admin-panel-title">Sản phẩm trong đơn</h2>
+    <table class="admin-table order-items-table">
+      <thead>
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Đơn giá</th>
+          <th>Số lượng</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.price | vnd }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ (item.price * item.quantity) | vnd }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="order-total-row">
+          <td colspan="3">Tổng cộng</td>
+          <td>{{ order.total_amount | vnd }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <div class="admin-panel" style="margin-bottom: 20px;">
+      <h2 class="admin-panel-title">Trạng thái đơn hàng</h2>
+      <div class="status-btn-group">
+        {% for s in ORDER_STATUSES %}
+        <form method="POST" action="{{ url_for('admin_order_status', order_id=order.id) }}">
+          <input type="hidden" name="redirect_to" value="detail">
+          <input type="hidden" name="status" value="{{ s }}">
+          <button type="submit" class="status-btn {{ s }} {{ 'is-current' if order.status == s else '' }}" {{ 'disabled' if order.status == s else '' }}>
+            {{ ORDER_STATUS_LABELS[s] }}
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="admin-panel" style="margin-bottom: 20px;">
+      <h2 class="admin-panel-title">Thông tin khách hàng</h2>
+      <div class="info-row">
+        <span class="label">Họ tên</span>
+        <span class="value">{{ order.customer_name }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Số điện thoại</span>
+        <span class="value">{{ order.customer_phone or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Email</span>
+        <span class="value">{{ order.customer_email or '—' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Ngày đặt</span>
+        <span class="value">{{ order.created_at | datetimevi }}</span>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h2 class="admin-panel-title">Ghi chú</h2>
+      {% if order.note %}
+      <div class="note-box">{{ order.note }}</div>
+      {% else %}
+      <p class="empty-hint">Không có ghi chú.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

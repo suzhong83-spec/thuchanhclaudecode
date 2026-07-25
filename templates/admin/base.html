@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} - Coffee Shop</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">Coffee<span>Shop</span> Admin</div>
+
+      <nav class="admin-sidebar-nav">
+        <div class="admin-nav-heading">Tổng quan</div>
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-link {{ 'active' if active_page == 'dashboard' else '' }}">
+          <span class="icon">📊</span>
+          <span class="nav-label">Tổng quan</span>
+        </a>
+
+        <div class="admin-nav-heading">Quản lý</div>
+        <a href="{{ url_for('admin_orders') }}" class="admin-nav-link {{ 'active' if active_page == 'orders' else '' }}">
+          <span class="icon">🧾</span>
+          <span class="nav-label">Đơn hàng</span>
+        </a>
+        <a href="{{ url_for('admin_products') }}" class="admin-nav-link {{ 'active' if active_page == 'products' else '' }}">
+          <span class="icon">☕</span>
+          <span class="nav-label">Sản phẩm</span>
+        </a>
+        <span class="admin-nav-link disabled">
+          <span class="icon">🗂️</span>
+          <span class="nav-label">Danh mục</span>
+          <span class="admin-badge-soon">Sắp có</span>
+        </span>
+        <a href="{{ url_for('admin_customers') }}" class="admin-nav-link {{ 'active' if active_page == 'customers' else '' }}">
+          <span class="icon">👥</span>
+          <span class="nav-label">Khách hàng</span>
+        </a>
+        <span class="admin-nav-link disabled">
+          <span class="icon">💬</span>
+          <span class="nav-label">Phản hồi</span>
+          <span class="admin-badge-soon">Sắp có</span>
+        </span>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <div class="admin-sidebar-user">
+          <div class="admin-sidebar-avatar">{{ (session.get('admin_name') or 'A')[:1] | upper }}</div>
+          <div>
+            <div class="admin-sidebar-user-name">{{ session.get('admin_name') or 'Admin' }}</div>
+            <div class="admin-sidebar-user-role">Quản trị viên</div>
+          </div>
+        </div>
+        <a href="{{ url_for('admin_logout') }}" class="admin-logout-link">
+          <span>⎋</span> Đăng xuất
+        </a>
+      </div>
+    </aside>
+
+    <div class="admin-sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button class="admin-menu-toggle" aria-label="Mở menu">☰</button>
+        <div class="admin-topbar-title">
+          <h1>{% block page_title %}Tổng quan{% endblock %}</h1>
+          <p>{% block page_subtitle %}Chào mừng quay lại Coffee Shop Admin{% endblock %}</p>
+        </div>
+        <div></div>
+      </header>
+
+      <main class="admin-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <div class="confirm-modal-overlay">
+    <div class="confirm-modal-box">
+      <h3>Xác nhận xóa</h3>
+      <p>Bạn có chắc chắn muốn xóa <strong class="confirm-modal-name"></strong>? Hành động này không thể hoàn tác.</p>
+      <div class="confirm-modal-actions">
+        <button type="button" class="btn-secondary confirm-modal-cancel">Hủy</button>
+        <button type="button" class="btn-danger confirm-modal-confirm">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

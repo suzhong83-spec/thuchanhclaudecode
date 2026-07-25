@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập Admin - Coffee Shop</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+  <div class="admin-login-wrap">
+    <div class="admin-login-card">
+      <div class="admin-login-logo">Coffee<span>Shop</span></div>
+      <p class="admin-login-subtitle">Đăng nhập khu vực quản trị</p>
+
+      {% if error %}
+        <div class="admin-login-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('admin_login') }}">
+        <div class="admin-form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autofocus placeholder="admin@coffeeshop.vn">
+        </div>
+        <div class="admin-form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="admin-login-btn">Đăng nhập</button>
+      </form>
+
+      <a href="{{ url_for('home') }}" class="admin-login-back">← Về trang chủ Coffee Shop</a>
+    </div>
+  </div>
+</body>
+</html>

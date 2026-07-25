@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ customer.name }}{% endblock %}
+{% block page_title %}{{ customer.name }}{% endblock %}
+{% block page_subtitle %}Hồ sơ khách hàng và lịch sử đơn hàng{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('admin_customers') }}" class="back-link">← Quay lại danh sách khách hàng</a>
+
+<div class="mini-stat-row">
+  <div class="mini-stat">
+    <div class="mini-stat-label">Tổng đơn hàng</div>
+    <div class="mini-stat-value">{{ order_count }}</div>
+  </div>
+  <div class="mini-stat">
+    <div class="mini-stat-label">Tổng chi tiêu</div>
+    <div class="mini-stat-value">{{ total_spent | vnd }}</div>
+  </div>
+  <div class="mini-stat">
+    <div class="mini-stat-label">Khách hàng từ</div>
+    <div class="mini-stat-value">{{ customer.created_at | datetimevi }}</div>
+  </div>
+</div>
+
+<div class="order-detail-grid">
+  <div class="admin-panel">
+    <h2 class="admin-panel-title">Lịch sử đơn hàng</h2>
+    {% if orders %}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Mã đơn</th>
+          <th>Trạng thái</th>
+          <th>Ngày đặt</th>
+          <th>Tổng tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr class="clickable-row" data-href="{{ url_for('admin_order_detail', order_id=o.id) }}">
+          <td><a class="order-id-link" href="{{ url_for('admin_order_detail', order_id=o.id) }}">#{{ o.id }}</a></td>
+          <td><span class="badge {{ o.status }}">{{ ORDER_STATUS_LABELS.get(o.status, o.status) }}</span></td>
+          <td>{{ o.created_at | datetimevi }}</td>
+          <td>{{ o.total_amount | vnd }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-hint">Khách hàng chưa có đơn hàng nào.</p>
+    {% endif %}
+  </div>
+
+  <div class="admin-panel">
+    <h2 class="admin-panel-title">Thông tin cá nhân</h2>
+    <div class="info-row">
+      <span class="label">Họ tên</span>
+      <span class="value">{{ customer.name }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Email</span>
+      <span class="value">{{ customer.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Tên đăng nhập</span>
+      <span class="value">{{ customer.email | username }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Ngày tạo</span>
+      <span class="value">{{ customer.created_at | datetimevi }}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

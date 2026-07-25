@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Sản phẩm{% endblock %}
+{% block page_title %}Sản phẩm{% endblock %}
+{% block page_subtitle %}Quản lý thực đơn Coffee Shop{% endblock %}
+
+{% block content %}
+<form class="admin-toolbar" method="GET" action="{{ url_for('admin_products') }}">
+  <div class="admin-toolbar-filters">
+    <input
+      type="text"
+      name="q"
+      class="admin-search-input"
+      placeholder="Tìm theo tên sản phẩm..."
+      value="{{ q }}"
+    >
+    <select name="category_id" class="admin-filter-select" onchange="this.form.submit()">
+      <option value="">Tất cả danh mục</option>
+      {% for c in categories %}
+      <option value="{{ c.id }}" {{ 'selected' if selected_category|string == c.id|string else '' }}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn-secondary">Lọc</button>
+  </div>
+  <a href="{{ url_for('admin_product_new') }}" class="btn-primary">+ Thêm sản phẩm</a>
+</form>
+
+<div class="admin-panel">
+  <div class="admin-panel-header">
+    <h2 class="admin-panel-title" style="margin: 0;">Danh sách sản phẩm</h2>
+    <span class="result-count">{{ products|length }} sản phẩm</span>
+  </div>
+
+  {% if products %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Danh mục</th>
+        <th>Giá</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>
+          <div class="product-name-cell">
+            <div class="table-thumb">
+              {% if p.image %}
+              <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
+              {% else %}
+              <span class="table-thumb-empty">☕</span>
+              {% endif %}
+            </div>
+            <span>{{ p.name }}</span>
+          </div>
+        </td>
+        <td><span class="category-tag">{{ p.category_name }}</span></td>
+        <td>{{ p.price | vnd }}</td>
+        <td>
+          <div class="row-actions">
+            <a href="{{ url_for('admin_product_edit', product_id=p.id) }}" class="icon-btn edit" title="Sửa">✎</a>
+            <button
+              type="button"
+              class="icon-btn delete js-delete-trigger"
+              title="Xóa"
+              data-form-id="delete-form-{{ p.id }}"
+              data-name="{{ p.name }}"
+            >🗑</button>
+            <form id="delete-form-{{ p.id }}" method="POST" action="{{ url_for('admin_product_delete', product_id=p.id) }}" style="display:none;">
+              <input type="hidden" name="q" value="{{ q }}">
+              <input type="hidden" name="category_id" value="{{ selected_category }}">
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">Không tìm thấy sản phẩm phù hợp.</p>
+  {% endif %}
+</div>
+{% endblock %}

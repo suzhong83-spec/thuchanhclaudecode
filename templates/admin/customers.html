@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Khách hàng{% endblock %}
+{% block page_title %}Khách hàng{% endblock %}
+{% block page_subtitle %}Quản lý thông tin và lịch sử mua hàng của khách{% endblock %}
+
+{% block content %}
+<form class="admin-toolbar" method="GET" action="{{ url_for('admin_customers') }}">
+  <div class="admin-toolbar-filters">
+    <input
+      type="text"
+      name="q"
+      class="admin-search-input"
+      placeholder="Tìm theo tên hoặc email..."
+      value="{{ q }}"
+    >
+    <button type="submit" class="btn-secondary">Tìm kiếm</button>
+  </div>
+</form>
+
+<div class="admin-panel">
+  <div class="admin-panel-header">
+    <h2 class="admin-panel-title" style="margin: 0;">Danh sách khách hàng</h2>
+    <span class="result-count">{{ customers|length }} khách hàng</span>
+  </div>
+
+  {% if customers %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Họ tên</th>
+        <th>Email</th>
+        <th>Tên đăng nhập</th>
+        <th>Ngày tạo</th>
+        <th>Tổng đơn hàng</th>
+        <th>Tổng chi tiêu</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr class="clickable-row" data-href="{{ url_for('admin_customer_detail', customer_id=c.id) }}">
+        <td><a class="order-id-link" href="{{ url_for('admin_customer_detail', customer_id=c.id) }}">{{ c.name }}</a></td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.email | username }}</td>
+        <td>{{ c.created_at | datetimevi }}</td>
+        <td>{{ c.order_count }}</td>
+        <td>{{ c.total_spent | vnd }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">Không tìm thấy khách hàng phù hợp.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Đơn hàng{% endblock %}
+{% block page_title %}Đơn hàng{% endblock %}
+{% block page_subtitle %}Quản lý và cập nhật trạng thái đơn hàng{% endblock %}
+
+{% block content %}
+<div class="admin-toolbar">
+  <div class="status-filter-tabs">
+    <a href="{{ url_for('admin_orders') }}" class="status-filter-tab {{ 'active' if not selected_status else '' }}">Tất cả</a>
+    {% for s in ORDER_STATUSES %}
+    <a href="{{ url_for('admin_orders', status=s) }}" class="status-filter-tab {{ 'active' if selected_status == s else '' }}">{{ ORDER_STATUS_LABELS[s] }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="admin-panel">
+  <div class="admin-panel-header">
+    <h2 class="admin-panel-title" style="margin: 0;">Danh sách đơn hàng</h2>
+    <span class="result-count">{{ orders|length }} đơn hàng</span>
+  </div>
+
+  {% if orders %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Ngày đặt</th>
+        <th>Đổi trạng thái</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr class="clickable-row" data-href="{{ url_for('admin_order_detail', order_id=o.id) }}">
+        <td><a class="order-id-link" href="{{ url_for('admin_order_detail', order_id=o.id) }}">#{{ o.id }}</a></td>
+        <td>{{ o.customer_name }}</td>
+        <td>{{ o.total_amount | vnd }}</td>
+        <td><span class="badge {{ o.status }}">{{ ORDER_STATUS_LABELS.get(o.status, o.status) }}</span></td>
+        <td>{{ o.created_at | datetimevi }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_order_status', order_id=o.id) }}">
+            <input type="hidden" name="redirect_to" value="list">
+            <input type="hidden" name="status_filter" value="{{ selected_status }}">
+            <select name="status" class="status-select" onchange="this.form.submit()">
+              {% for s in ORDER_STATUSES %}
+              <option value="{{ s }}" {{ 'selected' if o.status == s else '' }}>{{ ORDER_STATUS_LABELS[s] }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">Không có đơn hàng nào.</p>
+  {% endif %}
+</div>
+{% endblock %}
